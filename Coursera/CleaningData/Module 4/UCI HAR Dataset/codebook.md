@@ -1,28 +1,27 @@
 # CodeBook
 
 ## Overview
-Given dataset was derived from the **UCI HAR Dataset**, that represents data collected from the accelerometers and gyroscopes of Samsung Galaxy S smartphones. 
-Goal: to generate a **tidy dataset** that includes the mean of sensor measurements (only mean and standard deviation) for each subject and activity.
+The dataset used in this project comes from the **UCI HAR Dataset**, which contains data gathered from the accelerometers and gyroscopes of Samsung Galaxy S smartphones. The purpose of this project is to create a **tidy dataset** that focuses on the mean and standard deviation of sensor measurements for each subject and activity.
 
 ## Data Description
-The raw data contains sensor signals collected during various activities (such as walking, sitting, and standing) performed by subjects wearing smartphones. The smartphone's embedded accelerometer and gyroscope captured 3-axial signals (X, Y, Z) related to body acceleration, gravity acceleration, and angular velocity.
+The raw data captures sensor signals from activities like walking, sitting, standing, and others, recorded as volunteers wore smartphones. The accelerometer and gyroscope on the phone measured 3-axis signals related to body motion and acceleration, as well as angular velocity.
 
 ### Original Dataset Features:
-- **Subjects**: 30 volunteers (subjects) participated in the experiment.
-- **Activities**: The subjects performed six different activities.
-- **Measurements**: The original dataset contains 561 features, which are derived from time and frequency domain variables measured by the accelerometer and gyroscope.
+- **Subjects**: 30 individuals participated in the experiment.
+- **Activities**: Each subject performed six different activities.
+- **Measurements**: There are 561 different features in the original dataset, derived from time and frequency domain measurements from the smartphone's sensors.
 
-## Variables in Tidy Dataset
+## Variables in the Tidy Dataset
 The final tidy dataset includes the following columns:
 
 1. **`subject`**: 
    - Type: Integer
-   - Description: ID of the subject (ranges from 1 to 30).
+   - Description: Represents the ID of the subject (ranges from 1 to 30).
    - Example: `1`, `2`, ..., `30`.
 
 2. **`activity`**: 
    - Type: Factor
-   - Description: The activity performed by the subject.
+   - Description: Describes the activity performed by the subject.
    - Values:
      - WALKING
      - WALKING_UPSTAIRS
@@ -32,73 +31,70 @@ The final tidy dataset includes the following columns:
      - LAYING
 
 3. **Sensor Measurements**:
-   - Description: These columns represent the **mean** of the original mean and standard deviation measurements for each subject-activity combination. They are derived from both the **time domain** (denoted by `Time`) and the **frequency domain** (denoted by `Frequency`).
+   - Description: These columns show the **average** values of the original mean and standard deviation measurements for each subject and activity. The measurements include both **time-domain** (denoted by `Time`) and **frequency-domain** (denoted by `Frequency`) features.
    
-   The following patterns are used in the variable names:
-   - **Time**: Time domain signals (prefixed by `t` in the original dataset, now replaced with `Time`).
-   - **Frequency**: Frequency domain signals (prefixed by `f` in the original dataset, now replaced with `Frequency`).
-   - **Acc**: Accelerometer signals.
-   - **Gyro**: Gyroscope signals.
+   The naming convention follows these patterns:
+   - **Time**: Measurements in the time domain (originally prefixed by `t` in the dataset).
+   - **Frequency**: Measurements in the frequency domain (originally prefixed by `f`).
+   - **Acc**: Accelerometer data.
+   - **Gyro**: Gyroscope data.
    - **Body**: Body movement signals.
    - **Gravity**: Gravity acceleration signals.
-   - **mean()**: Mean value for the measurement.
-   - **std()**: Standard deviation for the measurement (labeled as `Standard Deviation` in the tidy dataset).
+   - **mean()**: Mean value of the measurement.
+   - **std()**: Standard deviation of the measurement (labeled as `Standard Deviation` in the tidy dataset).
    
-   Example sensor measurement names:
-   - `TimeBodyAccelerometerMean-X`: Mean value of body acceleration in the X direction from time domain signals.
-   - `TimeBodyAccelerometerStandard Deviation-Y`: Standard deviation of body acceleration in the Y direction from time domain signals.
-   - `FrequencyBodyGyroscopeMean-Z`: Mean value of body gyroscope in the Z direction from frequency domain signals.
+   Example measurement names:
+   - `TimeBodyAccelerometerMean-X`: Mean value of body acceleration in the X axis from time domain signals.
+   - `TimeBodyAccelerometerStandard Deviation-Y`: Standard deviation of body acceleration in the Y axis from time domain signals.
+   - `FrequencyBodyGyroscopeMean-Z`: Mean value of body gyroscope in the Z axis from frequency domain signals.
 
-## Transformations and Cleaning Steps
+## Data Cleaning and Transformation Steps
 
-1. **Merge Training and Test Datasets**:
-   - The training and test datasets were combined using `rbind()` for the **X**, **y**, and **subject** data.
+1. **Merging the Training and Test Data**:
+   - Data from the training and test sets were combined using `rbind()` for sensor data (`X`), activity labels (`y`), and subject IDs.
    - Resulting variables:
      - `x_combined`: Combined sensor measurements.
      - `y_combined`: Combined activity labels.
-     - `subject_combined`: Combined subject identifiers.
+     - `subject_combined`: Combined subject IDs.
 
-2. **Feature Selection**:
-   - Only the measurements related to **mean** and **standard deviation** were extracted from the combined dataset. This was done by selecting features that contain `mean()` or `std()` in their names.
-   - Feature extraction:
+2. **Selecting Relevant Features**:
+   - Only the measurements related to **mean** and **standard deviation** were extracted. This was done by identifying features that contain `mean()` or `std()` in their names.
+   - Feature selection was done using:
      ```r
      mean_std_columns <- grep("-(mean|std)\\(\\)", features[, 2]) + 2
      ```
 
-3. **Descriptive Activity Names**:
-   - The numeric activity labels were replaced with descriptive activity names using the `activity_labels.txt` file.
-   - Example:
+3. **Using Descriptive Activity Names**:
+   - Activity labels were replaced with descriptive names using the `activity_labels.txt` file.
+   - For example:
      - `1` → `WALKING`
      - `2` → `WALKING_UPSTAIRS`
      - `3` → `WALKING_DOWNSTAIRS`
 
-4. **Labeling the Dataset with Descriptive Variable Names**:
-   - Variable names were transformed to be more human-readable by replacing abbreviations with descriptive labels:
-     - `t` → `Time` (for time-domain signals).
-     - `f` → `Frequency` (for frequency-domain signals).
-     - `Acc` → `Accelerometer`.
-     - `Gyro` → `Gyroscope`.
-     - `Mag` → `Magnitude`.
-     - `-mean()` → `Mean`.
-     - `-std()` → `Standard Deviation`.
+4. **Labeling the Data with Descriptive Variable Names**:
+   - The variable names were updated to be more descriptive:
+     - `t` was replaced by `Time` (for time-domain signals).
+     - `f` was replaced by `Frequency` (for frequency-domain signals).
+     - `Acc` became `Accelerometer`.
+     - `Gyro` became `Gyroscope`.
+     - `Mag` became `Magnitude`.
+     - `-mean()` became `Mean`.
+     - `-std()` became `Standard Deviation`.
 
-   Example of renaming:
+   Example renaming:
    ```r
    names(selected) <- gsub("^t", "Time", names(selected))
    names(selected) <- gsub("-std\\(\\)", "Standard Deviation", names(selected))
    ```
 
 5. **Creating the Final Tidy Dataset**:
-   - The final tidy dataset was created by grouping the data by **subject** and **activity** and calculating the **mean** of each measurement.
-   - Code:
+   - The data was grouped by **subject** and **activity**, and the mean of each measurement was calculated.
+   - Code used:
      ```r
      tidy_dataset <- selected %>%
        group_by(subject, activity) %>%
        summarise_all(list(mean))
      ```
 
-6. **Output**:
-   - The tidy dataset was written to a file `tidy_dataset.txt` using `write.table()`, with no row names.
-
-## Summary
-The final tidy dataset provides the average (mean) of each variable related to mean and standard deviation for each subject and activity combination. This dataset is ready for further analysis or modeling tasks.
+6. **Saving the Tidy Dataset**:
+   - The final tidy dataset was saved to a file named `tidy_dataset.txt` using `write.table()`, with no row names.
