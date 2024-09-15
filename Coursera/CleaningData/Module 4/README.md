@@ -1,4 +1,4 @@
-# Human Activity Recognition Using Smartphones - Data Cleaning Project
+#Data Cleaning Project
 
 ## Overview
 
